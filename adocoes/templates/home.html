@@ -219,4 +219,19 @@
 
     </div>
 </section>
+<script>
+    // 1. Antes da página recarregar, salva a posição atual do scroll
+    window.addEventListener('beforeunload', () => {
+        localStorage.setItem('scrollPosition', window.scrollY);
+    });
+
+    // 2. Assim que a página carregar, volta para a posição salva
+    window.addEventListener('DOMContentLoaded', () => {
+        const scrollPosition = localStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            window.scrollTo(0, parseInt(scrollPosition));
+            localStorage.removeItem('scrollPosition'); // Limpa para não bugar depois
+        }
+    });
+</script>
 {% endblock %}

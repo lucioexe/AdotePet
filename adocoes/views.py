@@ -36,3 +36,13 @@ def detalhe(request, pk):
     }
     return render(request, 'detalhe.html', context)
 
+def como_adotar(request):
+    return render(request, 'como_adotar.html')
+
+def sobre_nos(request):
+    return render(request, 'sobre_nos.html')
+
+def ongs(request):
+    return render(request, 'ongs.html')
+
+
