@@ -3,14 +3,14 @@ from .models import Animal, InteresseAdocao
 
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'especie', 'idade', 'tamanho', 'sexo', 'vacinado', 'castrado')
-    list_filter = ('especie', 'tamanho', 'sexo', 'vacinado', 'castrado')
+    list_display = ('nome', 'especie', 'idade', 'idade_categoria', 'tamanho', 'sexo', 'vacinado', 'castrado')
+    list_filter = ('especie', 'idade_categoria', 'tamanho', 'sexo', 'vacinado', 'castrado')
     search_fields = ('nome', 'caracteristicas', 'descricao')
     list_per_page = 20
     
     fieldsets = (
         ('Informações Básicas', {
-            'fields': ('nome', 'especie', 'foto', 'idade', 'sexo', 'tamanho')
+            'fields': ('nome', 'especie', 'foto', 'idade', 'idade_categoria', 'sexo', 'tamanho')
         }),
         ('Detalhes', {
             'fields': ('caracteristicas', 'descricao')
