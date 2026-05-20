@@ -126,12 +126,12 @@
         <!-- Grid de Animais -->
         <div id="animals-grid">
             {% if animais %}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {% for animal in animais %}
                     <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group">
                         
                         <!-- Foto do Pet -->
-                        <div class="relative h-72 overflow-hidden bg-slate-100">
+                        <div class="relative h-48 overflow-hidden bg-slate-100">
                             {% if animal.foto %}
                                 <img src="{{ animal.foto.url }}" alt="{{ animal.nome }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             {% else %}
@@ -141,7 +141,7 @@
                             {% endif %}
                             
                             <!-- Badges Flutuantes -->
-                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-xs font-extrabold text-slate-800 shadow-sm border border-slate-100/50">
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-extrabold text-slate-800 shadow-sm border border-slate-100/50">
                                 {{ animal.especie }}
                             </div>
                             
@@ -153,24 +153,24 @@
                         </div>
                         
                         <!-- Conteúdo do Card -->
-                        <div class="p-6 flex flex-col flex-grow">
+                        <div class="p-4 flex flex-col flex-grow space-y-3">
                             <!-- Nome -->
-                            <h4 class="text-2xl font-black text-slate-900 mb-3 group-hover:text-teal-600 transition-colors">
+                            <h4 class="text-xl font-black text-slate-900 group-hover:text-teal-600 transition-colors">
                                 {{ animal.nome }}
                             </h4>
                             
                             <!-- Tags Básicas -->
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="px-3 py-1 text-xs font-bold rounded-xl bg-teal-50 text-teal-600">{{ animal.idade }} ano{{ animal.idade|pluralize }}</span>
-                                <span class="px-3 py-1 text-xs font-bold rounded-xl bg-blue-50 text-blue-600">{{ animal.tamanho }}</span>
-                                <span class="px-3 py-1 text-xs font-bold rounded-xl bg-purple-50 text-purple-600">{{ animal.sexo }}</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-teal-50 text-teal-600">{{ animal.idade }} ano{{ animal.idade|pluralize }}</span>
+                                <span class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-blue-50 text-blue-600">{{ animal.tamanho }}</span>
+                                <span class="px-2.5 py-1 text-[11px] font-bold rounded-xl bg-purple-50 text-purple-600">{{ animal.sexo }}</span>
                             </div>
-
+ 
                             <!-- Pílulas Verdes de Características (split do banco) -->
                             {% if animal.caracteristicas_list %}
-                                <div class="flex flex-wrap gap-1.5 mb-6">
+                                <div class="flex flex-wrap gap-1">
                                     {% for caracteristica in animal.caracteristicas_list %}
-                                        <span class="px-3.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                        <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
                                             {{ caracteristica }}
                                         </span>
                                     {% endfor %}
@@ -178,15 +178,15 @@
                             {% endif %}
                             
                             <!-- Vacina / Castração -->
-                            <div class="flex gap-6 mb-6 text-sm font-semibold text-slate-600">
+                            <div class="flex gap-4 text-xs font-semibold text-slate-600">
                                 <div class="flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 {% if animal.vacinado %}text-teal-500{% else %}text-slate-300{% endif %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3.5 h-3.5 {% if animal.vacinado %}text-teal-500{% else %}text-slate-300{% endif %}">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                     </svg>
                                     <span>Vacinado</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4 {% if animal.castrado %}text-teal-500{% else %}text-slate-300{% endif %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3.5 h-3.5 {% if animal.castrado %}text-teal-500{% else %}text-slate-300{% endif %}">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                     </svg>
                                     <span>Castrado</span>
@@ -194,14 +194,15 @@
                             </div>
                             
                             <!-- Ação -->
-                            <div class="mt-auto">
-                                <a href="{% url 'detalhe' animal.id %}" class="block text-center w-full py-4 bg-slate-50 hover:bg-teal-500 hover:text-white text-teal-600 font-extrabold rounded-2xl transition-all shadow-sm hover:shadow-md hover:shadow-teal-100">
+                            <div class="mt-auto pt-2">
+                                <a href="{% url 'detalhe' animal.id %}" class="block text-center w-full py-3 bg-slate-50 hover:bg-teal-500 hover:text-white text-teal-600 font-extrabold rounded-2xl transition-all shadow-sm hover:shadow-md hover:shadow-teal-100">
                                     Ver Detalhes
                                 </a>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
+                </div>
             </div>
         {% else %}
             <!-- Sem pets cadastrados -->
