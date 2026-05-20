@@ -11,5 +11,6 @@ urlpatterns = [
     path('login/', views.view_login, name='login'),
     path('logout/', views.view_logout, name='logout'),
     path('perfil/', views.view_perfil, name='perfil'),
+    path('favoritar/<int:animal_id>/', views.favoritar_animal, name='favoritar_animal'),
 ]
 

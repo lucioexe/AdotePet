@@ -3,6 +3,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from .models import Animal, Profile, InteresseAdocao
 
 def home(request):
@@ -22,11 +24,16 @@ def home(request):
     if tamanho and tamanho != 'Todos':
         animais = animais.filter(tamanho__iexact=tamanho)
         
+    favoritos = []
+    if request.user.is_authenticated:
+        favoritos = list(request.user.meus_interesses.values_list('animal_id', flat=True))
+
     context = {
         'animais': animais,
         'selected_especie': especie or 'Todos',
         'selected_idade': idade_categoria or 'Todos',
         'selected_tamanho': tamanho or 'Todos',
+        'favoritos': favoritos,
     }
     return render(request, 'home.html', context)
 
@@ -159,5 +166,20 @@ def view_perfil(request):
         'interesses': interesses,
     }
     return render(request, 'perfil.html', context)
+
+@require_POST
+def favoritar_animal(request, animal_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Não autorizado'}, status=403)
+        
+    animal = get_object_or_404(Animal, pk=animal_id)
+    interesse, created = InteresseAdocao.objects.get_or_create(animal=animal, usuario=request.user)
+    
+    if not created:
+        # Se já existia, descurte
+        interesse.delete()
+        return JsonResponse({'favoritado': False})
+        
+    return JsonResponse({'favoritado': True})
 
 

@@ -74,32 +74,63 @@
                 </h3>
 
                 {% if interesses %}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {% for interesse in interesses %}
-                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-teal-200 transition-colors group">
-                                <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 shadow-sm flex-shrink-0">
-                                    {% if interesse.animal.foto %}
-                                        <img src="{{ interesse.animal.foto.url }}" alt="{{ interesse.animal.nome }}" class="w-full h-full object-cover">
+                            {% with animal=interesse.animal %}
+                            <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group">
+                                
+                                <!-- Foto do Pet -->
+                                <div class="relative h-60 overflow-hidden bg-slate-100">
+                                    {% if animal.foto %}
+                                        <img src="{{ animal.foto.url }}" alt="{{ animal.nome }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     {% else %}
-                                        <div class="w-full h-full flex items-center justify-center text-xs text-slate-400 font-bold bg-slate-200">
+                                        <div class="w-full h-full flex items-center justify-center text-slate-400 font-bold bg-slate-200">
                                             Sem Foto
                                         </div>
                                     {% endif %}
+                                    
+                                    <!-- Badges Flutuantes -->
+                                    <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-xs font-extrabold text-slate-800 shadow-sm border border-slate-100/50">
+                                        {{ animal.especie }}
+                                    </div>
+                                    
+                                    <!-- Coração Preenchido -->
+                                    <button class="absolute top-4 right-4 bg-teal-500 text-white backdrop-blur-sm p-2.5 rounded-full hover:scale-110 transition-all shadow-sm border border-slate-100/50 cursor-default" onclick="event.preventDefault();">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <div class="flex-grow">
-                                    <h4 class="font-extrabold text-slate-900 group-hover:text-teal-600 transition-colors">
-                                        {{ interesse.animal.nome }}
+                                
+                                <!-- Conteúdo do Card -->
+                                <div class="p-5 flex flex-col flex-grow">
+                                    <!-- Nome -->
+                                    <h4 class="text-xl font-black text-slate-900 mb-2 group-hover:text-teal-600 transition-colors">
+                                        {{ animal.nome }}
                                     </h4>
-                                    <span class="text-xs text-slate-500 font-semibold block mt-0.5">
-                                        {{ interesse.animal.especie }} • {{ interesse.animal.sexo }}
-                                    </span>
+                                    
+                                    <!-- Tags Básicas -->
+                                    <div class="flex flex-wrap gap-1.5 mb-3">
+                                        <span class="px-2.5 py-0.5 text-xs font-bold rounded-lg bg-teal-50 text-teal-600">{{ animal.idade }} ano{{ animal.idade|pluralize }}</span>
+                                        <span class="px-2.5 py-0.5 text-xs font-bold rounded-lg bg-blue-50 text-blue-600">{{ animal.tamanho }}</span>
+                                        <span class="px-2.5 py-0.5 text-xs font-bold rounded-lg bg-purple-50 text-purple-600">{{ animal.sexo }}</span>
+                                    </div>
+                                    
+                                    <!-- Descrição Curta -->
+                                    <p class="text-slate-500 font-medium text-xs line-clamp-2 mb-4">
+                                        {{ animal.descricao }}
+                                    </p>
+                                    
+                                    <!-- Botão Ver Detalhes -->
+                                    <a href="{% url 'detalhe' animal.id %}" class="mt-auto w-full bg-slate-50 hover:bg-teal-55 text-slate-700 hover:text-teal-600 font-extrabold text-xs py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-slate-100 hover:border-teal-100 shadow-sm">
+                                        <span>Ver Detalhes</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                        </svg>
+                                    </a>
                                 </div>
-                                <a href="{% url 'detalhe' interesse.animal.id %}" class="p-2 bg-white text-slate-400 hover:text-teal-500 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                    </svg>
-                                </a>
                             </div>
+                            {% endwith %}
                         {% endfor %}
                     </div>
                 {% else %}
