@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 py-12">
+    <!-- Header -->
+    <div class="mb-10">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 text-teal-600 text-xs font-bold uppercase tracking-wider mb-3">
+            👤 Minha Conta
+        </span>
+        <h2 class="text-4xl font-black text-slate-900">Olá, {{ request.user.first_name|default:request.user.username }}!</h2>
+        <p class="text-slate-500 font-semibold text-sm mt-1">Gerencie seus dados e acompanhe seus processos de adoção.</p>
+    </div>
+
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Coluna Esquerda (Dados Pessoais) -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-100/50 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden">
+                <!-- Efeito Decorativo de Fundo -->
+                <div class="absolute top-0 inset-x-0 h-32 bg-gradient-to-br from-teal-500/10 to-emerald-500/10 z-0"></div>
+                
+                <!-- Avatar Circular -->
+                <div class="relative z-10 w-28 h-28 rounded-full bg-teal-500 text-white flex items-center justify-center text-4xl font-black shadow-md border-4 border-white mb-6 mt-6">
+                    {{ request.user.first_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}
+                </div>
+
+                <div class="relative z-10 w-full">
+                    <h3 class="text-2xl font-black text-slate-900 mb-1">
+                        {{ request.user.first_name|default:request.user.username }}
+                    </h3>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-50 text-slate-500 text-xs font-bold border border-slate-100 mb-6">
+                        Membro desde {{ request.user.date_joined|date:"d/m/Y" }}
+                    </span>
+
+                    <div class="space-y-4 border-t border-slate-100 pt-6 text-left">
+                        <div>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">E-mail</span>
+                            <span class="text-sm font-semibold text-slate-700 break-all">{{ request.user.email }}</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Telefone</span>
+                            <span class="text-sm font-semibold text-slate-700">
+                                {% if profile.telefone %}
+                                    {{ profile.telefone }}
+                                {% else %}
+                                    <span class="text-slate-400 italic">Não informado</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Botão Editar Dados -->
+                    <button onclick="openModal()" class="w-full mt-8 bg-slate-900 hover:bg-teal-500 text-white font-extrabold text-sm py-4 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-teal-100 flex items-center justify-center gap-2 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                        </svg>
+                        <span>Editar Dados</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita (Seções Úteis) -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Card 1: Meus Pets Favoritos / Interesse de Adoção -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-md border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5 text-teal-500">
+                        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                    </svg>
+                    <span>Interesses de Adoção</span>
+                </h3>
+
+                {% if interesses %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for interesse in interesses %}
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-teal-200 transition-colors group">
+                                <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 shadow-sm flex-shrink-0">
+                                    {% if interesse.animal.foto %}
+                                        <img src="{{ interesse.animal.foto.url }}" alt="{{ interesse.animal.nome }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center text-xs text-slate-400 font-bold bg-slate-200">
+                                            Sem Foto
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow">
+                                    <h4 class="font-extrabold text-slate-900 group-hover:text-teal-600 transition-colors">
+                                        {{ interesse.animal.nome }}
+                                    </h4>
+                                    <span class="text-xs text-slate-500 font-semibold block mt-0.5">
+                                        {{ interesse.animal.especie }} • {{ interesse.animal.sexo }}
+                                    </span>
+                                </div>
+                                <a href="{% url 'detalhe' interesse.animal.id %}" class="p-2 bg-white text-slate-400 hover:text-teal-500 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-10 bg-slate-50/50 rounded-2xl border border-slate-100">
+                        <p class="text-slate-500 font-semibold text-sm mb-4">Você ainda não registrou interesse em nenhum pet.</p>
+                        <a href="{% url 'home' %}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-teal-100">
+                            Encontrar um Amigo 🐾
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Card 2: Histórico de Mensagens / Solicitações -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-md border border-slate-100">
+                <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-teal-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                    <span>Status de Solicitações</span>
+                </h3>
+
+                {% if interesses %}
+                    <div class="space-y-4">
+                        {% for interesse in interesses %}
+                            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-sm mt-0.5">
+                                        🐾
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-slate-800 text-sm">
+                                            Solicitação de adoção do <strong class="font-black text-slate-900">{{ interesse.animal.nome }}</strong>
+                                        </p>
+                                        <span class="text-xs text-slate-500 font-medium block mt-1">
+                                            Enviada em {{ interesse.data_solicitacao|date:"d/m/Y \à\s H:i" }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3.5 py-1.5 text-xs font-bold rounded-full bg-amber-50 text-amber-600 border border-amber-100 flex items-center gap-1.5 self-start md:self-auto">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                        Aguardando contato da ONG
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-10 bg-slate-50/50 rounded-2xl border border-slate-100">
+                        <p class="text-slate-500 font-semibold text-sm">Nenhum histórico disponível no momento.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- Modal de Edição (Editar Dados) -->
+<div id="editModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2.5rem] w-full max-w-md p-8 md:p-10 shadow-2xl border border-slate-100 animate-scale-up">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-black text-slate-900">Editar Dados</h3>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 transition-all cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form method="POST" action="{% url 'perfil' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Nome -->
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nome Completo</label>
+                <input type="text" name="nome" required value="{{ request.user.first_name }}" placeholder="Seu nome" class="w-full bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none font-semibold shadow-sm">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">E-mail</label>
+                <input type="email" name="email" required value="{{ request.user.email }}" placeholder="seu@email.com" class="w-full bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none font-semibold shadow-sm">
+            </div>
+
+            <!-- Telefone -->
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Telefone</label>
+                <input type="text" name="telefone" value="{{ profile.telefone|default:'' }}" placeholder="(81) 99999-9999" class="w-full bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none font-semibold shadow-sm">
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="grid grid-cols-2 gap-4 pt-4">
+                <button type="button" onclick="closeModal()" class="w-full py-4 border border-slate-200 text-slate-600 hover:bg-slate-50 font-extrabold rounded-2xl transition-all cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="submit" class="w-full bg-[#14B8A6] hover:bg-[#0D9488] text-white font-extrabold rounded-2xl transition-all shadow-md cursor-pointer">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    // Fechar modal ao clicar fora dele
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('editModal');
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

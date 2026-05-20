@@ -40,12 +40,12 @@
                 <span>Filtre sua busca</span>
             </h2>
             
-            <form method="GET" action="{% url 'home' %}" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <form id="filter-form" method="GET" action="{% url 'home' %}" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Espécie -->
                 <div class="relative">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Espécie</label>
                     <div class="relative">
-                        <select name="especie" onchange="this.form.submit()" class="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none cursor-pointer font-semibold shadow-sm">
+                        <select name="especie" class="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none cursor-pointer font-semibold shadow-sm">
                             <option value="Todos" {% if selected_especie == 'Todos' %}selected{% endif %}>Todas as espécies</option>
                             <option value="Cachorro" {% if selected_especie == 'Cachorro' %}selected{% endif %}>Cachorro</option>
                             <option value="Gato" {% if selected_especie == 'Gato' %}selected{% endif %}>Gato</option>
@@ -64,7 +64,7 @@
                 <div class="relative">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Idade</label>
                     <div class="relative">
-                        <select name="idade_categoria" onchange="this.form.submit()" class="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none cursor-pointer font-semibold shadow-sm">
+                        <select name="idade_categoria" class="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none cursor-pointer font-semibold shadow-sm">
                             <option value="Todos" {% if selected_idade == 'Todos' %}selected{% endif %}>Todas as idades</option>
                             <option value="Filhote" {% if selected_idade == 'Filhote' %}selected{% endif %}>Filhote</option>
                             <option value="Jovem" {% if selected_idade == 'Jovem' %}selected{% endif %}>Jovem</option>
@@ -83,7 +83,7 @@
                 <div class="relative">
                     <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tamanho</label>
                     <div class="relative">
-                        <select name="tamanho" onchange="this.form.submit()" class="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none cursor-pointer font-semibold shadow-sm">
+                        <select name="tamanho" class="w-full appearance-none bg-slate-50 border border-slate-100 text-slate-700 px-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all outline-none cursor-pointer font-semibold shadow-sm">
                             <option value="Todos" {% if selected_tamanho == 'Todos' %}selected{% endif %}>Todos os tamanhos</option>
                             <option value="Pequeno" {% if selected_tamanho == 'Pequeno' %}selected{% endif %}>Pequeno</option>
                             <option value="Médio" {% if selected_tamanho == 'Médio' %}selected{% endif %}>Médio</option>
@@ -123,8 +123,9 @@
         </div>
 
         <!-- Grid de Animais -->
-        {% if animais %}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div id="animals-grid">
+            {% if animais %}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {% for animal in animais %}
                     <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 flex flex-col group">
                         
@@ -216,6 +217,7 @@
                 </a>
             </div>
         {% endif %}
+        </div>
 
     </div>
 </section>
@@ -231,6 +233,43 @@
         if (scrollPosition) {
             window.scrollTo(0, parseInt(scrollPosition));
             localStorage.removeItem('scrollPosition'); // Limpa para não bugar depois
+        }
+    });
+
+    // Filtros Assíncronos sem recarregamento de tela
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('filter-form');
+        const grid = document.getElementById('animals-grid');
+
+        if (form && grid) {
+            // Escuta qualquer mudança nos selects (Espécie, Idade, Tamanho)
+            form.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', () => {
+                    // Cria a URL com os filtros selecionados
+                    const formData = new FormData(form);
+                    const searchParams = new URLSearchParams(formData);
+                    const url = `${window.location.pathname}?${searchParams.toString()}`;
+
+                    // Atualiza a URL do navegador sem recarregar a página
+                    window.history.pushState({}, '', url);
+
+                    // Busca o HTML novo em segundo plano
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(html => {
+                            // Cria um elemento temporário para ler o HTML que chegou
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newGrid = doc.getElementById('animals-grid');
+
+                            // Substitui APENAS o grid de animais antigo pelo novo, sem piscar a tela
+                            if (newGrid) {
+                                grid.innerHTML = newGrid.innerHTML;
+                            }
+                        })
+                        .catch(error => console.error('Erro ao filtrar:', error));
+                });
+            });
         }
     });
 </script>

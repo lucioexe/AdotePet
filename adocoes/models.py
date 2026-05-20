@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Animal(models.Model):
     TAMANHO_CHOICES = [
@@ -63,3 +64,14 @@ class InteresseAdocao(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} se interessou por {self.animal.nome}"
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    telefone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Telefone")
+
+    class Meta:
+        verbose_name = "Perfil"
+        verbose_name_plural = "Perfis"
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
