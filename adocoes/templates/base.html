@@ -44,7 +44,7 @@
                 </span>
             </a>
 
-            <!-- Links -->
+            <!-- Links desktop -->
             <div class="hidden md:flex items-center gap-8 font-semibold text-slate-600">
                 <a href="{% url 'home' %}" class="hover:text-teal-500 transition-colors">Encontrar Pet</a>
                 <a href="{% url 'como-adotar' %}" class="hover:text-teal-500 transition-colors">Como Adotar</a>
@@ -53,7 +53,7 @@
             </div>
 
             <!-- Botão Login / Perfil Arredondado -->
-            <div class="flex items-center gap-4">
+            <div class="hidden md:flex items-center gap-4">
                 {% if user.is_authenticated %}
                     <a href="{% url 'perfil' %}" class="flex items-center gap-2.5 px-5 py-2.5 bg-teal-50 border border-teal-100 text-teal-700 font-extrabold rounded-full transition-all hover:bg-teal-100/50 shadow-sm">
                         <div class="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-xs font-black">
@@ -73,8 +73,67 @@
                     </a>
                 {% endif %}
             </div>
+
+            <!-- Botão Hamburguer (mobile) -->
+            <button id="menu-toggle" class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-xl hover:bg-slate-100 transition-colors gap-1.5" aria-label="Abrir menu">
+                <span id="bar1" class="block w-6 h-0.5 bg-slate-700 transition-all duration-300 origin-center"></span>
+                <span id="bar2" class="block w-6 h-0.5 bg-slate-700 transition-all duration-300"></span>
+                <span id="bar3" class="block w-6 h-0.5 bg-slate-700 transition-all duration-300 origin-center"></span>
+            </button>
+        </div>
+
+        <!-- Menu mobile (dropdown) -->
+        <div id="mobile-menu" class="md:hidden hidden flex-col bg-white border-t border-slate-100 px-6 py-4 gap-1 shadow-lg">
+            <a href="{% url 'home' %}" class="block py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">Encontrar Pet</a>
+            <a href="{% url 'como-adotar' %}" class="block py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">Como Adotar</a>
+            <a href="{% url 'sobre-nos' %}" class="block py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">Sobre Nós</a>
+            <a href="{% url 'ongs-parceiras' %}" class="block py-3 px-4 rounded-xl font-semibold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-colors">ONGs Parceiras</a>
+            <div class="border-t border-slate-100 mt-2 pt-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'perfil' %}" class="flex items-center gap-2.5 py-3 px-4 rounded-xl font-semibold text-teal-700 hover:bg-teal-50 transition-colors">
+                        <div class="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-xs font-black">
+                            {{ user.first_name|slice:":1"|upper|default:user.username|slice:":1"|upper }}
+                        </div>
+                        Olá, {{ user.first_name|default:user.username|truncatechars:12 }}
+                    </a>
+                    <a href="{% url 'logout' %}" class="block py-3 px-4 rounded-xl font-semibold text-rose-500 hover:bg-rose-50 transition-colors">Sair</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="block py-3 px-4 rounded-xl font-bold text-white bg-slate-900 hover:bg-teal-500 transition-colors text-center mt-1">Login</a>
+                {% endif %}
+            </div>
         </div>
     </nav>
+
+    <script>
+        const toggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const bar1 = document.getElementById('bar1');
+        const bar2 = document.getElementById('bar2');
+        const bar3 = document.getElementById('bar3');
+        let isOpen = false;
+
+        toggle.addEventListener('click', () => {
+            isOpen = !isOpen;
+            mobileMenu.classList.toggle('hidden', !isOpen);
+            mobileMenu.classList.toggle('flex', isOpen);
+            // Animação X
+            bar1.style.transform = isOpen ? 'translateY(8px) rotate(45deg)' : '';
+            bar2.style.opacity = isOpen ? '0' : '1';
+            bar3.style.transform = isOpen ? 'translateY(-8px) rotate(-45deg)' : '';
+        });
+
+        // Fechar ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (isOpen && !toggle.contains(e.target) && !mobileMenu.contains(e.target)) {
+                isOpen = false;
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+                bar1.style.transform = '';
+                bar2.style.opacity = '1';
+                bar3.style.transform = '';
+            }
+        });
+    </script>
 
     <!-- Conteúdo Principal -->
     <main class="flex-grow">
